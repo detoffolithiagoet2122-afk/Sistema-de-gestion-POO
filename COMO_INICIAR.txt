@@ -1,0 +1,59 @@
+CÓMO INICIAR EL TP (Windows)
+============================
+
+QUÉ HACE FALTA TENER INSTALADO
+- Python 3.11 o más nuevo. Al instalarlo, marcar "Add Python to PATH".
+- MySQL Server y MySQL Workbench. Acordarse de la contraseña de root.
+
+
+1. PREPARAR LA BASE DE DATOS
+   a) Abrir Workbench y conectarse al servidor local.
+   b) Ir a File > Open SQL Script y elegir script_bd.sql.
+   c) Tocar el rayo para ejecutar todo el script.
+
+   Crea la base almacen_simple con datos de prueba. Si ya existía una base
+   con ese nombre, la reemplaza. Las demás bases no se tocan.
+
+
+2. PONER LA CONTRASEÑA DE MYSQL
+   a) Hacer una copia de config.example.toml y llamarla config.toml.
+   b) Abrirla con el Bloc de notas.
+   c) Escribir la contraseña entre las comillas de password = "" y guardar.
+
+
+3. INSTALAR LAS LIBRERÍAS (solo la primera vez)
+   Abrir una terminal dentro de esta carpeta:
+   Shift + clic derecho en un lugar vacío > "Abrir en Terminal".
+   Ejecutar estos dos comandos, uno por vez:
+
+   python -m venv .venv
+   .venv\Scripts\python -m pip install -r requirements.txt
+
+   Tarda unos minutos y necesita internet.
+
+
+4. ABRIR EL PROGRAMA
+
+   .venv\Scripts\python main.py
+
+   Las próximas veces, con MySQL iniciado, alcanza con este comando.
+
+
+USUARIOS PARA ENTRAR
+   admin / admin123
+   operador / operador123
+
+
+SI ALGO FALLA
+- "No se pudo conectar a MySQL": revisar que MySQL esté iniciado (Servicios de
+  Windows), que la contraseña de config.toml sea correcta y que se haya
+  ejecutado el script.
+- Error por config.toml: falta el archivo o tiene otro nombre. Revisar que no
+  haya quedado como config.toml.txt.
+- "python" no se reconoce: reinstalar Python marcando "Add Python to PATH".
+- Productos con stock en 0: las fechas de prueba se vencen con los días.
+  Volver a ejecutar script_bd.sql.
+
+
+DIAGRAMAS
+docs/diagramas.drawio se abre en https://app.diagrams.net

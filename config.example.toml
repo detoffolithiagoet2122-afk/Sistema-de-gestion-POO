@@ -1,0 +1,8 @@
+# Copiar como config.toml y poner la clave de MySQL.
+
+[base_datos]
+host = "localhost"
+puerto = 3306
+usuario = "root"
+password = ""
+nombre = "almacen_simple"

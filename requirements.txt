@@ -1,0 +1,6 @@
+PySide6
+SQLAlchemy>=2.0
+PyMySQL
+cryptography
+bcrypt
+openpyxl
