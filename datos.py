@@ -33,9 +33,10 @@ def traducir_error(error):
     if hasattr(error, "orig") and len(error.orig.args) >= 2:
         codigo, mensaje = error.orig.args[0], error.orig.args[1]
 
+# ejemplo de error lanzado con SIGNAL
     if codigo == 1644:  # error lanzado con SIGNAL en un trigger o procedimiento
-        if "stock" in mensaje.lower():
-            return StockInsuficiente(mensaje)
+        if "stock" in mensaje.lower(): 
+            return StockInsuficiente(mensaje)   
         return ErrorValidacion(mensaje)
     if codigo == 1062:
         return ErrorValidacion("Ya existe un registro con ese dato.")

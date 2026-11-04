@@ -36,54 +36,63 @@ def texto_obligatorio(valor, campo):
 # ---------------------------------------------------------------------
 # Clase base: todo lo que se guarda en una tabla tiene un id.
 # ---------------------------------------------------------------------
-class Entidad: """"Clase madre de la gran mayoria de clases (excento de 3 o 5, las cuales 3 son de errores)."""
-    def __init__(self, id): """Constructor los cual tiene los parametros de id (identificador unico)"""
-        self.__id = id """Guarda y compara el id de la entidad. Con __ se hace privado el id, para que no se pueda modificar desde afuera.""" 
+class Entidad:
+    """Clase madre de casi todas las clases (menos Inventario, LineaCompra y las 3 de errores)."""
 
-    @property 
-    """Se encarga de que el dato privado se pueda leer desde afuera, pero no se pueda modificar. Se hace con @property."""
+    def __init__(self, id):
+        """Constructor: recibe el id (identificador único)."""
+        # Con __ el id es privado: no se puede modificar directo desde afuera.
+        self.__id = id
+
+    # @property hace que el dato privado se pueda leer desde afuera (obj.id).
+    @property
     def id(self):
-        return self.__id 
-    """Obtiene el parametro privado id, lo cual hace que returne el id privado."""
+        # Devuelve el id privado.
+        return self.__id
 
+    # El setter deja cambiar el valor (obj.id = 5). Lo usa el DAO al guardar.
     @id.setter
-    """Deja que se pueda modificar los valores pero antes pasa una validacion/control tirando error en el dado caso de que no funcione"""
     def id(self, valor):
         self.__id = valor
-    "Obtiene el parametro privado id, permitiendo moficicarlo"
 
 
 # ---------------------------------------------------------------------
 # Categoría de productos (Lácteos, Bebidas...).
 # ---------------------------------------------------------------------
 class Categoria(Entidad):
-    def __init__(self, nombre, descripcion="", activo=True, id=None): """Constructor de la clase Categoria que esta heredada"""
-        super().__init__(id) """Llama al constructor de la clase madre Entidad, obteniendo como parametro el id."""
-        self.nombre = nombre """Atributo publico""" 
-        self.__descripcion = descripcion """Atributo privado"""
-        self.__activo = activo """Atributo privado"""
+    def __init__(self, nombre, descripcion="", activo=True, id=None):
+        """Constructor de Categoria, que hereda de Entidad."""
+        # Llama al constructor de la clase madre Entidad y le pasa el id.
+        super().__init__(id)
+        # Pasa por el setter de nombre, así se valida también al crear el objeto.
+        self.nombre = nombre
+        # Atributos privados.
+        self.__descripcion = descripcion
+        self.__activo = activo
 
     @property
     def nombre(self):
+        # Devuelve el nombre, que está guardado en privado.
         return self.__nombre
-    """Returna el nombre pero en privado"""
 
+    # Permite modificar el nombre: texto_obligatorio controla que no venga vacío.
     @nombre.setter
-    """Permite modificar el nombre, valida si el texto es obligatorio, que no vengan vacio ni con nigun error"""
     def nombre(self, valor):
-        self.__nombre = texto_obligatorio(valor, "Nombre") """Llama a la funcion texto_obligatorio, que valida todos los valores vacios en el texto"""
+        self.__nombre = texto_obligatorio(valor, "Nombre")
 
     @property
     def descripcion(self):
+        # Devuelve lo que tenga guardado en descripción (privado).
         return self.__descripcion
-    """Returna lo que tenga guardado en descripcion, pero en privado"""
+
     @property
     def activo(self):
+        # Devuelve lo que tenga guardado en activo (privado).
         return self.__activo
-    """"Returna lo que tenga guardado en activo, pero en privado"""
+
     def __str__(self):
+        # __str__ decide qué texto se ve en pantalla (por ejemplo, en los combos): el nombre.
         return self.__nombre
-    """Returna el nombre pero en privado, y str decide que es lo que se va a ver por pantalla, para que el texto no quede feo."""
 
 # ---------------------------------------------------------------------
 # Proveedor de mercadería.
@@ -102,8 +111,8 @@ class Proveedor(Entidad):
     def razon_social(self):
         return self.__razon_social
 
+    # Permite modificar la razón social, pero antes pasa por texto_obligatorio, que controla que no venga vacía.
     @razon_social.setter
-    "permite modificar el atributo publico razon_social, pero antes pasa por la funcion texto_obligatorio, que valida que el texto no venga vacio ni con ningun error"
     def razon_social(self, valor):
         self.__razon_social = texto_obligatorio(valor, "Razón social")
 
@@ -111,8 +120,8 @@ class Proveedor(Entidad):
     def cuit(self):
         return self.__cuit
 
+    # Permite modificar el CUIT (privado): exige 11 números y lo guarda como 20-12345678-9.
     @cuit.setter
-    """permite modificar el atributo privado cuit."""
     def cuit(self, valor):
         numeros = re.sub(r"\D", "", valor)  # deja solo los números
         if len(numeros) != 11:
@@ -127,10 +136,11 @@ class Proveedor(Entidad):
     def email(self):
         return self.__email
 
+    # Permite modificar el email.
     @email.setter
-    "Permite modificar el email."
     def email(self, valor):
-        if valor and "@" not in valor: "email = thiagodetogmail.com ---> El email no es valido"
+        # Ejemplo: thiagodetogmail.com (sin @) ---> "El email no es válido."
+        if valor and "@" not in valor:
             raise ErrorValidacion("El email no es válido.")
         self.__email = valor
 
@@ -221,14 +231,15 @@ class Producto(Entidad, ABC):
         return self.__activo
 
     # Cada subclase responde estos métodos a su manera (polimorfismo).
+    # La respuesta la dan las clases hijas: si es perecedero o no.
     @abstractmethod
     def tipo(self):
         pass
-    """la respuesta la da las clases hija, si es perecedero o no, y si requiere vencimiento o no"""
+
+    # La respuesta la dan las clases hijas: si requiere vencimiento o no.
     @abstractmethod
     def requiere_vencimiento(self):
         pass
-     """la respuesta la da las clases hija, si es perecedero o no, y si requiere vencimiento o no"""
 
     def validar_vencimiento(self, fecha):
         if self.requiere_vencimiento() and fecha is None:
@@ -474,4 +485,5 @@ class Usuario(Entidad):
         return self.__rol
 
     def verificar_password(self, password):
-        return bcrypt.checkpw(password.encode(), self.__hash_password.encode()) """repaso"""
+        # Cifra lo que se escribió y lo compara con la contraseña cifrada guardada.
+        return bcrypt.checkpw(password.encode(), self.__hash_password.encode())
